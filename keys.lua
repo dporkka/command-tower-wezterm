@@ -158,22 +158,27 @@ function M.apply(config)
   })
 
   -- Default hyperlink rules + custom ones for agent output.
+  -- GitHub repo is configurable via WEZTERM_GITHUB_REPO; defaults to this config repo.
+  local github_repo = os.getenv("WEZTERM_GITHUB_REPO") or "dporkka/command-tower-wezterm"
   config.hyperlink_rules = wezterm.default_hyperlink_rules()
   -- GitHub issue/PR references like #123
   table.insert(config.hyperlink_rules, {
     regex = [[#(\d+)]],
-    format = "https://github.com/davidporkka/agentvault/issues/$1",
+    format = "https://github.com/" .. github_repo .. "/issues/$1",
   })
   -- Git commit SHAs
   table.insert(config.hyperlink_rules, {
     regex = [[\b([a-f0-9]{7,40})\b]],
-    format = "https://github.com/davidporkka/agentvault/commit/$1",
+    format = "https://github.com/" .. github_repo .. "/commit/$1",
   })
-  -- Jira-style tickets
-  table.insert(config.hyperlink_rules, {
-    regex = [[\b([A-Z][A-Z0-9]+-\d+)\b]],
-    format = "https://jira.example.com/browse/$1",
-  })
+  -- Jira-style tickets (enabled only when WEZTERM_JIRA_HOST is set).
+  local jira_host = os.getenv("WEZTERM_JIRA_HOST")
+  if jira_host then
+    table.insert(config.hyperlink_rules, {
+      regex = [[\b([A-Z][A-Z0-9]+-\d+)\b]],
+      format = "https://" .. jira_host .. "/browse/$1",
+    })
+  end
 
   -- Mouse: middle-click pastes primary selection.
   config.mouse_bindings = {
