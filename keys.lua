@@ -115,6 +115,53 @@ function M.apply(config)
     { key = "R", mods = "LEADER", action = act.ReloadConfiguration },
     { key = "q", mods = "LEADER", action = act.QuitApplication },
 
+    -- EternalTerminal + Tmux launchers.
+    -- LEADER+e picks from predefined ET hosts; LEADER+E prompts for a custom host.
+    -- Both run: et <host> -c "tmux new-session -A -s main"
+    {
+      key = "e",
+      mods = "LEADER",
+      action = act.InputSelector({
+        title = "ET host",
+        choices = {
+          { label = "wsl2", id = "100.64.0.2" },
+          { label = "mini-pc", id = "100.64.0.3" },
+          { label = "contabo-vps", id = "100.64.0.10" },
+        },
+        action = wezterm.action_callback(function(window, pane, id, label)
+          if not id then
+            return
+          end
+          window:perform_action(
+            act.SpawnCommandInNewTab({
+              domain = { DomainName = "local" },
+              args = { "et", id, "-c", "tmux new-session -A -s main" },
+            }),
+            pane
+          )
+        end),
+      }),
+    },
+    {
+      key = "E",
+      mods = "LEADER",
+      action = act.PromptInputLine({
+        description = "ET host (custom):",
+        action = wezterm.action_callback(function(window, pane, line)
+          if not line or line == "" then
+            return
+          end
+          window:perform_action(
+            act.SpawnCommandInNewTab({
+              domain = { DomainName = "local" },
+              args = { "et", line, "-c", "tmux new-session -A -s main" },
+            }),
+            pane
+          )
+        end),
+      }),
+    },
+
     -- Domain switcher.
     { key = "d", mods = "LEADER", action = act.ShowLauncherArgs({ flags = "DOMAINS" }) },
     -- Spawn tab on domain with cwd mirror.
@@ -136,6 +183,18 @@ function M.apply(config)
     -- Clipboard (OSC 52 keeps the Windows host clipboard hydrated from yanks).
     { key = "c", mods = "CMD", action = act.CopyTo("ClipboardAndPrimarySelection") },
     { key = "v", mods = "CMD", action = act.PasteFrom("Clipboard") },
+
+    -- mac-like tab switching: physical Alt+number sends Ctrl+number after the
+    -- system-wide Alt/Ctrl swap, so bind Ctrl+1..9 to switch tabs.
+    { key = "1", mods = "CTRL", action = act.ActivateTab(0) },
+    { key = "2", mods = "CTRL", action = act.ActivateTab(1) },
+    { key = "3", mods = "CTRL", action = act.ActivateTab(2) },
+    { key = "4", mods = "CTRL", action = act.ActivateTab(3) },
+    { key = "5", mods = "CTRL", action = act.ActivateTab(4) },
+    { key = "6", mods = "CTRL", action = act.ActivateTab(5) },
+    { key = "7", mods = "CTRL", action = act.ActivateTab(6) },
+    { key = "8", mods = "CTRL", action = act.ActivateTab(7) },
+    { key = "9", mods = "CTRL", action = act.ActivateTab(8) },
   }
 
   -- Pane marks: LEADER m [a-z].
