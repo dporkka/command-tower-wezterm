@@ -162,6 +162,53 @@ function M.apply(config)
       }),
     },
 
+    -- Mosh + Tmux launchers (UDP roaming; complements ET).
+    -- LEADER+m picks from predefined Mosh hosts; LEADER+M prompts for a custom host.
+    -- Both run: mosh <host> -- tmux new-session -A -s main
+    {
+      key = "m",
+      mods = "LEADER",
+      action = act.InputSelector({
+        title = "Mosh host",
+        choices = {
+          { label = "wsl2", id = "100.64.0.2" },
+          { label = "mini-pc", id = "100.64.0.3" },
+          { label = "contabo-vps", id = "100.64.0.10" },
+        },
+        action = wezterm.action_callback(function(window, pane, id, label)
+          if not id then
+            return
+          end
+          window:perform_action(
+            act.SpawnCommandInNewTab({
+              domain = { DomainName = "local" },
+              args = { "mosh", id, "--", "tmux", "new-session", "-A", "-s", "main" },
+            }),
+            pane
+          )
+        end),
+      }),
+    },
+    {
+      key = "M",
+      mods = "LEADER",
+      action = act.PromptInputLine({
+        description = "Mosh host (custom):",
+        action = wezterm.action_callback(function(window, pane, line)
+          if not line or line == "" then
+            return
+          end
+          window:perform_action(
+            act.SpawnCommandInNewTab({
+              domain = { DomainName = "local" },
+              args = { "mosh", line, "--", "tmux", "new-session", "-A", "-s", "main" },
+            }),
+            pane
+          )
+        end),
+      }),
+    },
+
     -- Domain switcher.
     { key = "d", mods = "LEADER", action = act.ShowLauncherArgs({ flags = "DOMAINS" }) },
     -- Spawn tab on domain with cwd mirror.

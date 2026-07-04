@@ -13,6 +13,7 @@ Modular WezTerm configuration optimized for AI agentic development and the hybri
 - **Pane marks**: `LEADER m <a-z>` to mark, `LEADER '` to jump.
 - **Domain management**: `LEADER d` switches domains; `LEADER D` spawns a tab on a chosen domain mirroring cwd.
 - **EternalTerminal launchers**: `LEADER e` picks a predefined host and opens ET + Tmux in a new tab; `LEADER E` prompts for a custom host.
+- **Mosh launchers**: `LEADER m` picks a predefined host and opens Mosh + Tmux in a new tab; `LEADER M` prompts for a custom host.
 - **Status line**: git branch, `AGENT_TASK_ID`, battery warning, and dev-plane node health.
 - **Power/performance**: WebGPU frontend, large scrollback, idle FPS throttling, battery-aware FPS.
 - **Session persistence**: `LEADER W s` / `LEADER W r` save and restore lightweight layouts.
